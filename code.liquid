@@ -1,0 +1,138 @@
+   
+
+   
+// this should be your youtube link end url code {{ product.metafields.pvideo.videolink }}
+
+// key: videolink
+// namespace: pvideo
+// value type: string
+// string : youtube last link url ex. 
+
+// to be addedd in your product-template.liquid 
+
+
+   {%- if product.metafields.pvideo.videolink != blank -%}
+          
+          <div class="video-thumbnail">
+             <button class="btn p-0 js-play" type="button" data-toggle="modal" data-target="#modalVideo" data-src="{{ product.metafields.pvideo.videolink }}" data-title=""> 
+               <div class="video-overlay-play">
+                    <img class="card-img-top" src="https://img.youtube.com/vi/{{ product.metafields.pvideo.videolink }}/hqdefault.jpg" alt=""/>
+               </div>
+            </button>
+      	 </div>
+                        
+	 {%- endif -%}
+
+
+    
+
+// add this before schema product-template.liquid
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="modalVideo">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title js-title-insert"></h5>
+        <button class="close js-pause" style="    margin-right: -50px;
+    margin-top: -41px;" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body px-0 py-0">
+        <div class="">
+          <div class="embed-responsive-item" id="youTubeIframe"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add youtube api-->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+
+
+
+// add this after schema product-template.liquid
+
+<script>
+              var player;
+              var lastButton = '';
+              const youtube = 'youTubeIframe';
+              const titleInsert = '.js-title-insert';
+              const btnPlay = '.js-play';
+              const btnPause = '.js-pause';
+              const modalId = '#modalVideo';
+              const videoQuality = 'hd720';
+
+              function onYouTubePlayerAPIReady() {
+                player = new YT.Player(youtube, {
+                  controls: 2,
+                  iv_load_policy: 3,
+                  rel: 0,
+                  events: {
+                    onReady: onPlayerReady
+                  }
+                });
+              }
+
+              function onPlayerReady(event) {
+                'use strict';
+                $(btnPlay).on('click', function() {
+                  var videoId = $(this).attr('data-src');
+
+                  if (lastButton == videoId) {
+                    $(titleInsert).text($(this).attr('data-title'));
+                    player.playVideo(videoId, 0, videoQuality);
+                  } else {
+                    $(titleInsert).text($(this).attr('data-title'));
+                    player.loadVideoById(videoId, 0, videoQuality);
+                    lastButton = videoId;
+                  }
+                });
+
+                $(btnPause).on('click', function() {
+                  player.pauseVideo();
+                });
+
+                $(modalId).on('click', function() {
+                  player.pauseVideo();
+                });
+              }
+
+</script>
+            
+// add this before schema style.css or custom css
+/*------ Youtube Modal CSS ------*/
+
+.card-img-top {
+  width:150px;
+  clip-path: inset(14% 0 14% 0%);
+}
+.video-thumbnail {text-align: center;}
+.js-play {    border: 1px solid #ccc; }
+
+.video-overlay-play {
+  height: 100%;
+  positon: absolute;
+  width: 100%;
+  position: relative;
+}
+.video-overlay-play:after {
+  content: '▶';
+  display: block;
+  width: 2em;
+  height: 2em;
+  border-radius: 100%;
+  position: absolute;
+  left: calc(50% - 1em);
+  top: calc(50% - 1em);
+  background-color: red;
+  background-color: rgba(255, 0, 0, 0.6);
+  color: white !important;
+  font-size: 2em;
+  line-height: 2.2em;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+/*------ END Youtbe Popup CSS ------*/
